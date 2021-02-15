@@ -1,0 +1,17 @@
+<!DOCTYPE xml>
+
+
+<Camera
+  lookfrom="03 03.0 7.0"
+  lookat="0 0 0"
+  fov="60"
+  />
+
+<Option anti-aliasing="4"/>
+
+
+<Object name="torus" radius="4"  texture="xpm/grid.xpm"/>
+
+
+<Light position="0 03 3"
+intensity="1.0"  />

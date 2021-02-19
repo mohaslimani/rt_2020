@@ -85,6 +85,7 @@ t_scene		*rt_init_scene(void)
 	if (!(scene = (struct s_scene*)malloc(sizeof(struct s_scene))))
 		rt_perror();
 	scene->anti_aliasing = 3;
+	scene->progress = 2;
 	scene->ambient = 1.0;
 	scene->object = NULL;
 	scene->light = NULL;

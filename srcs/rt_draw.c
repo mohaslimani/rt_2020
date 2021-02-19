@@ -60,6 +60,32 @@ t_vec rt_anti_aliasing(t_thread *t, int col, int row)
 void		*rt_run(t_thread *t)
 {
 	t_vec   c;
+	t_ray	r;
+	int			color;
+	int			col;
+	int			row;
+
+	row = IMG_HEIGHT + 1;
+	while (--row >= 0)
+	{
+		col = (int)(t->i * IMG_WIDTH / NBTHREAD) - 1;
+		while (++col < (int)((t->i + 1) * IMG_WIDTH / NBTHREAD))
+		{
+			c = rt_anti_aliasing(t, col, row);
+			//r = rt_get_ray(&t->rt->scene->cam, (double)col / (double)IMG_WIDTH, (double)row / (double)IMG_HEIGHT);
+			//c = ray_march(&r, &t->rec);
+			color = rt_rgb_to_int(c);
+			//color = c.x + 200;
+			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
+		}
+	}
+	pthread_exit(NULL);
+}
+
+void			*rt_run_25(t_thread *t)
+{
+	t_vec   c;
+	t_ray   r;
 	int			color;
 	int			col;
 	int			row;
@@ -73,12 +99,41 @@ void		*rt_run(t_thread *t)
 			c = rt_anti_aliasing(t, col, row);			
 			color = rt_rgb_to_int(c);
 			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
+			rt_mlx_putpixel(t->rt, col + 1, IMG_HEIGHT - row, color);
+			rt_mlx_putpixel(t->rt, col , IMG_HEIGHT - row - 1, color);
+			rt_mlx_putpixel(t->rt, col  + 1, IMG_HEIGHT - row - 1, color);
+			col++;
+		}
+		row--;
+	}
+	pthread_exit(NULL);
+}
+
+void			*rt_run_50(t_thread *t)
+{
+	t_vec   c;
+	t_ray r;
+	int			color;
+	int			col;
+	int			row;
+
+	row = IMG_HEIGHT + 1;
+	while (--row >= 0)
+	{
+		col = (int)(t->i * IMG_WIDTH / NBTHREAD) - 1;
+		while (++col < (int)((t->i + 1) * IMG_WIDTH / NBTHREAD))
+		{
+			c = rt_anti_aliasing(t, col, row);	
+			color = rt_rgb_to_int(c);
+			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
+			rt_mlx_putpixel(t->rt, col + 1, IMG_HEIGHT - row, color);
+			col++;
 		}
 	}
 	pthread_exit(NULL);
 }
 
-void		rt_start(t_rt *rt) 
+void		rt_start(t_rt *rt, void* (*rt_runner)(t_thread *t)) 
 {
 	pthread_t	thread[NBTHREAD];
 	t_thread	div[NBTHREAD];
@@ -89,16 +144,34 @@ void		rt_start(t_rt *rt)
 	{
 		div[i].rt = rt;
 		div[i].i = i;
-		pthread_create(&thread[i], NULL, (void*)rt_run, &div[i]);
+		pthread_create(&thread[i], NULL, (void*)rt_runner, &div[i]);
 	}
 	while (--i >= 0)
 		pthread_join(thread[i], NULL);
 }
 
-int			rt_draw(t_rt *rt)
+void		rt_auto_draw(t_rt *rt)
 {
 	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
-	rt_start(rt);
+	if (rt->scene->progress == 1)
+		rt_start(rt, rt_run_25);
+	else if (rt->scene->progress == 2)
+		rt_start(rt, rt_run_50);
+	else
+		rt_start(rt, rt_run);
+}
+
+int		rt_draw(t_rt *rt)
+{
+	rt_auto_draw(rt);
 	mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
 	return (EXIT_SUCCESS);
 }
+
+// int			rt_draw(t_rt *rt)
+// {
+// 	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
+// 	rt_start(rt);
+// 	mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
+// 	return (EXIT_SUCCESS);
+// }

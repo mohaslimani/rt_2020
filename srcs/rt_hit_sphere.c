@@ -54,14 +54,15 @@ int			rt_hit_sphere(t_object *sphere, t_ray *r, t_hit *rec)
 		rec->t0 = (-rec->coef[1] - sqrt(rec->delta)) / (2 * rec->coef[0]);
 		rec->t1 = (-rec->coef[1] + sqrt(rec->delta)) / (2 * rec->coef[0]);
 		(rec->t0 < rec->t1) ? 0 : ft_float_swap(&rec->t0, &rec->t1);
-		if (rec->t0 < rec->closest && rec->t0 > MIN)
+		if (negative(rec) == 0)
+			return (0);
+		if (rec->t < rec->closest && rec->t > MIN)
 		{
-			rec->t = rec->t0;
 			rec->p = vec_ray(r, rec->t);
-			rec->n = vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size);
+			rec->n = (rec->t != rec->negative[1]) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : rec->negative_normal;
 			sphere_uv(sphere, rec);
-			if (sphere->is_sliced == 1 && rt_slicing(sphere, r, rec) == 0)
-				return (0);
+			// if (sphere->is_sliced == 1 && rt_slicing(sphere, r, rec) == 0)
+			// 	return (0);
 			return (1);
 		}
 	}

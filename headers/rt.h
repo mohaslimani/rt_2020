@@ -39,7 +39,7 @@ t_ray			rt_get_ray(t_camera *p, double u, double v);
 t_vec 			rt_raytracer(t_thread *t, t_ray *r, int d);
 t_vec 			rt_anti_aliasing(t_thread *t, int col, int row);
 void			*rt_run(t_thread *t);
-void			rt_start(t_rt *rt);
+void			rt_start(t_rt *rt, void* (*rt_runner)(t_thread *t));//changed for pbar
 int				rt_draw(t_rt *rt);
 
 /*
@@ -139,5 +139,14 @@ void			rt_init(t_rt *rt);
 void			rt_perror(void);
 void			rt_exit(t_rt *rt, char *msg, int err);
 int				rt_close(t_rt *rt);
+
+
+/*
+ *	negative(t_hit *record)
+*/
+int		negative(t_hit *record);
+t_vec   normale_cone(t_object *o, t_ray *r, t_hit *rec);
+
+/* fract */
 
 #endif

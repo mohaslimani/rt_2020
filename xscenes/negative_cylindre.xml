@@ -1,0 +1,17 @@
+<!DOCTYPE xml>
+
+
+<Camera
+  lookfrom="0.0 0 -1.0"
+  lookat="0 0 15"
+  fov="60"
+  />
+
+<Object name="cylinder" position="0.0 0.0 -7.0" direction="0 1.0 0" 
+translation="0 0 0" radius="3.0" color="0 0 0.9" material="ko"/>
+<Object name="plan" position="0.0 0 15.0" direction="0 0 -1" 
+color="01 1.0 0.0" material="ko"/>
+
+<Object name="sphere" direction="0 1 0" position="0 0 0" material="ko" radius="3" color="0 1 0"/>
+<Object name="cone" position="0 5 5" direction="0 1 0" radius="30" color="1 0 0" material="ko"/>
+<Light position="0 0 -16" intensity="0.8" />

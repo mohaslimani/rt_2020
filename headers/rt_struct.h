@@ -157,6 +157,8 @@ typedef struct	s_hit
 	double		c;//eq 2eme deg
 	double		coef[4];
 	double		delta;//eq 2eme deg
+	double		negative[2];//negative object
+	t_vec		negative_normal;//negative object normal
 }				t_hit;
 
 
@@ -184,6 +186,7 @@ typedef struct	s_scene
 	t_object	*object;
 	float		ambient;
 	int			anti_aliasing;
+	int			progress;//progress bar
 }				t_scene;
 
 typedef struct	s_rt

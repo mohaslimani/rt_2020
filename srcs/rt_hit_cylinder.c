@@ -25,77 +25,48 @@ t_vec		normale_cylinder(t_object *o, t_ray *r, t_hit *rec)
 			 vec_unit(o->rot)))));
 	return (normale);
 } 
-
-int     rt_hit_cylinder(t_object *obj, t_ray *ray, t_hit *record)//limited cylinder
-{
-	obj->height = 5;//obj->hight ]0, +oo]
-	double m;
-
-    record->or = vec_sub(ray->origin, obj->pos);
-	record->a = vec_dot(ray->dir, ray->dir) - pow(vec_dot(ray->dir, vec_unit(obj->rot)), 2);
-	record->b = 2 * (vec_dot(ray->dir, record->or) - (vec_dot(ray->dir, vec_unit(obj->rot))
-				* vec_dot(record->or, vec_unit(obj->rot))));
-	record->c = vec_dot(record->or, record->or) - pow(vec_dot(record->or, vec_unit(obj->rot)), 2)
-		- obj->size * obj->size;
-	record->delta = record->b * record->b - 4.0 * record->a * record->c;
-	if (record->delta >= 0)
-	{
-		record->t0 = (-record->b - sqrt(record->delta)) / (2 * record->a);
-		record->t1 = (-record->b + sqrt(record->delta)) / (2 * record->a);
-		(record->t0 < record->t1) ? 0 : ft_float_swap(&record->t0, &record->t1);
-		m = vec_dot(ray->dir, obj->rot) * record->t0 + vec_dot(record->or, obj->rot);
-		if (m <= -obj->height/2 || m >= obj->height/2)
-		{
-			m = vec_dot(ray->dir, obj->rot) * record->t1 + vec_dot(record->or, obj->rot);
-			if (m <= -obj->height/2 || m >= obj->height/2)
-				return (0);
-			ft_float_swap(&record->t0, &record->t1);
-		}
-		record->t = record->t0;
-		if (record->t < record->closest && record->t >= 1e-4)
-		{
-			record->p = vec_ray(ray, record->t);
-			record->n = normale_cylinder(obj, ray, record);
-			record->n = (record->t0 > record->t1) ? vec_pro_k(record->n, -1) : record->n;
-			cylinder_uv(obj, record);
-			return (1);
-		}
-	}
-	return (0);
-}
-
-
-// int			rt_hit_cylinder(t_object *o, t_ray *r, t_hit *rec)
+// 								hit_limited_cylinder
+// int     rt_limite_cylinder(t_object *obj, t_ray *ray, t_hit *record)//limited cylinder
 // {
+// 	obj->height = 5;//obj->hight ]0, +oo]
+// 	double m;
 
-// 	rec->or = vec_sub(r->origin, o->pos);
-// 	rec->coef[0] = vec_dot(r->dir, r->dir) - pow(vec_dot(r->dir, o->rot), 2);
-// 	rec->coef[1] = 2 * (vec_dot(r->dir, rec->or) - (vec_dot(r->dir, o->rot)
-// 				* vec_dot(rec->or, o->rot)));
-// 	rec->coef[2] = vec_dot(rec->or, rec->or) - pow(vec_dot(rec->or, o->rot), 2)
-// 		- o->size * o->size;
-// 	rec->delta = rec->coef[1] * rec->coef[1] - 4 * rec->coef[0] * rec->coef[2];
-// 	if (rec->delta >= 0)
+//     record->or = vec_sub(ray->origin, obj->pos);
+// 	record->a = vec_dot(ray->dir, ray->dir) - pow(vec_dot(ray->dir, vec_unit(obj->rot)), 2);
+// 	record->b = 2 * (vec_dot(ray->dir, record->or) - (vec_dot(ray->dir, vec_unit(obj->rot))
+// 				* vec_dot(record->or, vec_unit(obj->rot))));
+// 	record->c = vec_dot(record->or, record->or) - pow(vec_dot(record->or, vec_unit(obj->rot)), 2)
+// 		- obj->size * obj->size;
+// 	record->delta = record->b * record->b - 4.0 * record->a * record->c;
+// 	if (record->delta >= 0)
 // 	{
-// 		rec->t0 = (-rec->coef[1] - sqrt(rec->delta)) / (2 * rec->coef[0]);
-// 		rec->t1 = (-rec->coef[1] + sqrt(rec->delta)) / (2 * rec->coef[0]);
-// 		(rec->t0 < rec->t1) ? 0 : ft_float_swap(&rec->t0, &rec->t1);
-// 		if (rec->t0 < rec->closest && rec->t0 > MIN)
+// 		record->t0 = (-record->b - sqrt(record->delta)) / (2 * record->a);
+// 		record->t1 = (-record->b + sqrt(record->delta)) / (2 * record->a);
+// 		(record->t0 < record->t1) ? 0 : ft_float_swap(&record->t0, &record->t1);
+// 		m = vec_dot(ray->dir, obj->rot) * record->t0 + vec_dot(record->or, obj->rot);
+// 		if (m <= -obj->height/2 || m >= obj->height/2)
 // 		{
-// 			rec->p = vec_ray(r, rec->t);
-// 			rec->n = vec_unit(vec_sub(vec_sub(rec->p, o->pos), vec_pro_k(o->rot, vec_dot(r->dir, o->rot) * rec->t + vec_dot(rec->or, o->rot))));
-// 			//if (o->is_sliced == 1 && rt_slicing(o, r, rec) == 0)
-// 			//	return (0);
+// 			m = vec_dot(ray->dir, obj->rot) * record->t1 + vec_dot(record->or, obj->rot);
+// 			if (m <= -obj->height/2 || m >= obj->height/2)
+// 				return (0);
+// 			ft_float_swap(&record->t0, &record->t1);
+// 		}
+// 		record->t = record->t0;
+// 		if (record->t < record->closest && record->t >= 1e-4)
+// 		{
+// 			record->p = vec_ray(ray, record->t);
+// 			record->n = normale_cylinder(obj, ray, record);
+// 			record->n = (record->t0 > record->t1) ? vec_pro_k(record->n, -1) : record->n;
+// 			cylinder_uv(obj, record);
 // 			return (1);
 // 		}
 // 	}
-// 	return (0);	
+// 	return (0);
 // }
 
-int     rt_pp_cylinder(t_object *obj, t_ray *ray, t_hit *record)
+
+int     rt_hit_cylinder(t_object *obj, t_ray *ray, t_hit *record)
 {
-	obj->height = 6;
-	double m;
 
     record->or = vec_sub(ray->origin, obj->pos);
 	record->a = vec_dot(ray->dir, ray->dir) - pow(vec_dot(ray->dir, vec_unit(obj->rot)), 2);
@@ -108,23 +79,20 @@ int     rt_pp_cylinder(t_object *obj, t_ray *ray, t_hit *record)
   	{
 		record->t0 = (-record->b - sqrt(record->delta)) / (2 * record->a);
 		record->t1 = (-record->b + sqrt(record->delta)) / (2 * record->a);
-		(record->t0 < record->t1) ? 0 : ft_float_swap(&record->t0, &record->t1);
-		m = vec_dot(ray->dir, obj->rot) * record->t0 + vec_dot(record->or, obj->rot);
-		if (m <= -(obj->height/2) || m >= obj->height/2)
-		{
-			m = vec_dot(ray->dir, obj->rot) * record->t1 + vec_dot(record->or, obj->rot);
-			if (m <= -(obj->height/2) || m >= obj->height/2)
-				return (0);
-			ft_float_swap(&record->t0, &record->t1);
-		}
-		if (record->t < record->closest && record->t >= 1e-4)
-		{
+		(record->t0 > record->t1) ? ft_float_swap(&record->t0, &record->t1) : 0;
+		if ((record->t0 <= record->negative[0] || record->t0 >= record->negative[1]))
+			record->t = record->t0;
+		else if (record->negative[0] <= record->t0 && record->t0 <= record->negative[1] && record->negative[1] < record->t1)
+			record->t = record->negative[1];
+		else
+			return (0);
+    	if (record->t < record->closest && record->t >= 1e-4)
+   		{
 			record->p = vec_ray(ray, record->t);
-			record->n = normale_cylinder(obj, ray, record);
-			record->n = (record->t0 > record->t1) ? vec_pro_k(record->n, -1) : record->n;
+			record->n = (record->t != record->negative[1]) ? normale_cylinder(obj, ray, record) : record->negative_normal;
 			cylinder_uv(obj, record);
 			return (1);
 		}
-	}
+ 	}
 	return (0);
 }

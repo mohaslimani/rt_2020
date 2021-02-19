@@ -24,7 +24,7 @@ t_vec		normale_cylinder(t_object *o, t_ray *r, t_hit *rec)
 			 vec_unit(o->rot))* rec->t + vec_dot(rec->or, 
 			 vec_unit(o->rot)))));
 	return (normale);
-} 
+}
 // 								hit_limited_cylinder
 // int     rt_limite_cylinder(t_object *obj, t_ray *ray, t_hit *record)//limited cylinder
 // {

@@ -25,6 +25,26 @@
 
 }
 
+int			rt_hit_disque(t_object *o, t_ray *r, t_hit *rec)
+{
+	o->size = 4;
+	t_vec centre = o->pos;
+	t_vec normal = o->rot;
+	rec->t = ((vec_dot(normal, centre) - vec_dot(normal, r->origin)) / vec_dot(normal, r->dir));
+	if (rec->t >= rec->closest || rec->t <= MIN)
+		return (0);
+	t_vec point = vec_sub(vec_ray(r, rec->t), centre);
+
+	if (vec_lengthsquared(point) >= o->size * o->size)
+		return(0);
+	if (rec->negative[0] <= rec->t && rec->t <= rec->negative[1])
+		return (0);
+	rec->p = vec_ray(r, rec->t);
+	rec->n = o->rot;
+	plane_uv(rec, o);
+	return (1);
+}
+
 int     rt_hit_plan(t_object *o, t_ray *r, t_hit *rec)
 {
     // record->t = ((vec_dot(obj->rot, obj->pos) - vec_dot(obj->rot, ray->origin))

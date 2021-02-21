@@ -148,5 +148,6 @@ int		negative(t_hit *record);
 t_vec   normale_cone(t_object *o, t_ray *r, t_hit *rec);
 
 /* fract */
-
+int		progress_bar(t_rt *rt);
+t_vec		anti_aa(t_thread *th, double i, double j, int select);
 #endif

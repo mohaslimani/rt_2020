@@ -46,7 +46,7 @@ t_vec		rt_int_to_rgb(int x)
 void		rt_mlx_putpixel(t_rt *rt, int x, int y, int color)
 {
 	if (x >= 0 && x < IMG_WIDTH
-			&& y >= 0 && y < IMG_HEIGHT)
+			&& y >= 0 && y < IMG_HEIGHT + 8)
 	{
 		rt->data[y * (int)IMG_WIDTH + x] = color;
 	}

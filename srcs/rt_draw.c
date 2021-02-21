@@ -33,7 +33,7 @@ t_vec rt_raytracer(t_thread *th, t_ray *r, int depth)
 }
 
 t_vec rt_anti_aliasing(t_thread *t, int col, int row)
-{
+{/*
 	t_ray	r;
 	t_vec	color;
 	int		ss[2];
@@ -54,7 +54,13 @@ t_vec rt_anti_aliasing(t_thread *t, int col, int row)
 			color = vec_add(color, rt_raytracer(t, &r, 50));
 		}
 	}
-	return (vec_div_k(color, anti_a * anti_a));
+	return (vec_div_k(color, anti_a * anti_a));*/
+	t_vec		color;
+
+	color = vec(0, 0, 0);
+	color = anti_aa(t, col, row, t->rt->scene->select);
+	color = vec_div_k(color, t->rt->scene->select + 1);
+	return (color);
 }
 
 void		*rt_run(t_thread *t)
@@ -72,10 +78,7 @@ void		*rt_run(t_thread *t)
 		while (++col < (int)((t->i + 1) * IMG_WIDTH / NBTHREAD))
 		{
 			c = rt_anti_aliasing(t, col, row);
-			//r = rt_get_ray(&t->rt->scene->cam, (double)col / (double)IMG_WIDTH, (double)row / (double)IMG_HEIGHT);
-			//c = ray_march(&r, &t->rec);
 			color = rt_rgb_to_int(c);
-			//color = c.x + 200;
 			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
 		}
 	}
@@ -150,6 +153,45 @@ void		rt_start(t_rt *rt, void* (*rt_runner)(t_thread *t))
 		pthread_join(thread[i], NULL);
 }
 
+void	progress_fill(t_rt *rt)
+{
+	int i;
+	int j;
+
+	i = -1;
+	while (++i < ((double)IMG_WIDTH / (double)11) * (double)(rt->scene->progress))
+	{
+		j = -1;
+		while (++j < 8)
+			rt_mlx_putpixel(rt, i, IMG_HEIGHT + j, 0xFF0000);
+	}
+}
+
+int		progress_bar(t_rt *rt)
+{
+	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
+	if (rt->scene->progress == 1)
+		rt_start(rt, rt_run_25);
+	else if (rt->scene->progress == 2)
+		rt_start(rt, rt_run_50);
+	else if (rt->scene->progress >= 3 && rt->scene->progress <= 11 && rt->scene->select <= 8)
+	{
+		rt_start(rt, rt_run);
+		rt->scene->select++;
+	}
+	if (rt->scene->progress <= 11)
+	{
+		//mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
+		//rt_draw(rt);
+		progress_fill(rt);
+		mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
+		ft_putendl("pp");
+		sleep(1);
+		rt->scene->progress++;
+	}
+	return 0;
+}
+
 void		rt_auto_draw(t_rt *rt)
 {
 	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
@@ -163,7 +205,7 @@ void		rt_auto_draw(t_rt *rt)
 
 int		rt_draw(t_rt *rt)
 {
-	rt_auto_draw(rt);
+	//rt_auto_draw(rt);
 	mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
 	return (EXIT_SUCCESS);
 }

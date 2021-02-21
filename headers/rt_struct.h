@@ -187,6 +187,8 @@ typedef struct	s_scene
 	float		ambient;
 	int			anti_aliasing;
 	int			progress;//progress bar
+	int			select;
+	t_vec		data1[9][500000];//IMG_WIDTH*IMG_HEIGHT
 }				t_scene;
 
 typedef struct	s_rt

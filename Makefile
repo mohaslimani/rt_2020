@@ -26,6 +26,7 @@ SRCS = rt.c\
 		rt_solve_quadric.c\
 rt_textures.c\
 		rt_cube_case.c\
+		auto_anti.c\
 #load_txt.c\
 #ft_parse0.c ft_parse.c\
 

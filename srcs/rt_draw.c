@@ -33,32 +33,22 @@ t_vec rt_raytracer(t_thread *th, t_ray *r, int depth)
 }
 
 t_vec rt_anti_aliasing(t_thread *t, int col, int row)
-{/*
-	t_ray	r;
-	t_vec	color;
-	int		ss[2];
-	int		anti_a;
+{
+	// t_ray	r;
+	// t_vec	color;
+	// int		ss[2];
+	// int		anti_a;
 
-	color = vec(0, 0, 0);
-	anti_a = t->rt->scene->anti_aliasing;
-	ss[0] = -1;
+	// color = vec(0, 0, 0);
+	// anti_a = t->rt->scene->anti_aliasing;
 
-	while ( ++ss[0] < anti_a)
-	{
-		ss[1] = -1;
-		while (++ss[1] < anti_a)
-		{
-			r = rt_get_ray(&t->rt->scene->cam, 
-					(double)((col + ((ss[0] + 0.5)/ anti_a)) / IMG_WIDTH),
-					(double)((row + ((ss[1] + 0.5) / anti_a)) / IMG_HEIGHT));
-			color = vec_add(color, rt_raytracer(t, &r, 50));
-		}
-	}
-	return (vec_div_k(color, anti_a * anti_a));*/
+	// 		r = rt_get_ray(&t->rt->scene->cam, (double)((col + ((0 + 0.5)/ anti_a)) / IMG_WIDTH), (double)((row + ((0 + 0.5) / anti_a)) / IMG_HEIGHT));
+	// 		color = vec_add(color, rt_raytracer(t, &r, 50));
+	// return (vec_div_k(color, anti_a * anti_a));
 	t_vec		color;
 
 	color = vec(0, 0, 0);
-	color = anti_aa(t, col, row, t->rt->scene->select);
+	color = anti_aa(t, (double)col, (double)row, t->rt->scene->select);
 	color = vec_div_k(color, t->rt->scene->select + 1);
 	return (color);
 }
@@ -158,6 +148,7 @@ void	progress_fill(t_rt *rt)
 	int i;
 	int j;
 
+	(rt->scene->select == rt->scene->max_anti_a) ? (rt->scene->progress = 11) : 0;
 	i = -1;
 	while (++i < ((double)IMG_WIDTH / (double)11) * (double)(rt->scene->progress))
 	{
@@ -174,20 +165,16 @@ int		progress_bar(t_rt *rt)
 		rt_start(rt, rt_run_25);
 	else if (rt->scene->progress == 2)
 		rt_start(rt, rt_run_50);
-	else if (rt->scene->progress >= 3 && rt->scene->progress <= 11 && rt->scene->select <= 8)
+	else if (rt->scene->progress >= 3 && rt->scene->progress <= 11 && rt->scene->select <= rt->scene->max_anti_a + 1)
 	{
 		rt_start(rt, rt_run);
 		rt->scene->select++;
 	}
-	if (rt->scene->progress <= 11)
+	if (rt->scene->progress <= 11 && rt->scene->select <= rt->scene->max_anti_a + 1)
 	{
-		//mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
-		//rt_draw(rt);
 		progress_fill(rt);
-		mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
-		ft_putendl("pp");
-		sleep(1);
 		rt->scene->progress++;
+		mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
 	}
 	return 0;
 }

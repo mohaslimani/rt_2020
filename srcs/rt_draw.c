@@ -126,6 +126,42 @@ void			*rt_run_50(t_thread *t)
 	pthread_exit(NULL);
 }
 
+
+void			*rt_run_12(t_thread *t)
+{
+	t_vec   c;
+	t_ray r;
+	int			color;
+	int			col;
+	int			row;
+
+	row = IMG_HEIGHT + 1;
+	while (--row >= 0)
+	{
+		col = (int)(t->i * IMG_WIDTH / NBTHREAD) - 1;
+		while (++col < (int)((t->i + 1) * IMG_WIDTH / NBTHREAD))
+		{
+			c = rt_anti_aliasing(t, col, row);	
+			color = rt_rgb_to_int(c);
+			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
+			rt_mlx_putpixel(t->rt, col + 1, IMG_HEIGHT - row, color);
+			rt_mlx_putpixel(t->rt, col + 2, IMG_HEIGHT - row, color);
+
+			rt_mlx_putpixel(t->rt, col , IMG_HEIGHT - row - 1, color);
+			rt_mlx_putpixel(t->rt, col  + 1, IMG_HEIGHT - row - 1, color);
+			rt_mlx_putpixel(t->rt, col  + 2, IMG_HEIGHT - row - 1, color);
+
+			rt_mlx_putpixel(t->rt, col , IMG_HEIGHT - row - 2, color);
+			rt_mlx_putpixel(t->rt, col  + 1, IMG_HEIGHT - row - 2, color);
+			rt_mlx_putpixel(t->rt, col  + 2, IMG_HEIGHT - row - 2, color);
+
+			col += 2;;
+		}
+		row -= 2;
+	}
+	pthread_exit(NULL);
+}
+
 void		rt_start(t_rt *rt, void* (*rt_runner)(t_thread *t)) 
 {
 	pthread_t	thread[NBTHREAD];
@@ -143,14 +179,15 @@ void		rt_start(t_rt *rt, void* (*rt_runner)(t_thread *t))
 		pthread_join(thread[i], NULL);
 }
 
+
 void	progress_fill(t_rt *rt)
 {
 	int i;
 	int j;
 
-	(rt->scene->select == rt->scene->max_anti_a) ? (rt->scene->progress = 11) : 0;
+	(rt->scene->select == rt->scene->anti_aliasing) ? (rt->scene->progress = 12) : 0;
 	i = -1;
-	while (++i < ((double)IMG_WIDTH / (double)11) * (double)(rt->scene->progress))
+	while (++i < ((double)IMG_WIDTH / (double)12) * (double)(rt->scene->progress))
 	{
 		j = -1;
 		while (++j < 8)
@@ -162,15 +199,19 @@ int		progress_bar(t_rt *rt)
 {
 	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
 	if (rt->scene->progress == 1)
+		rt_start(rt, rt_run_12);
+	//usleep(2000);
+	//ft_putendl("pp");
+	if (rt->scene->progress == 2)
 		rt_start(rt, rt_run_25);
-	else if (rt->scene->progress == 2)
+	else if (rt->scene->progress == 3)
 		rt_start(rt, rt_run_50);
-	else if (rt->scene->progress >= 3 && rt->scene->progress <= 11 && rt->scene->select <= rt->scene->max_anti_a + 1)
+	else if (rt->scene->progress >= 4 && rt->scene->progress <= 12 && rt->scene->select <= rt->scene->anti_aliasing + 1)
 	{
 		rt_start(rt, rt_run);
 		rt->scene->select++;
 	}
-	if (rt->scene->progress <= 11 && rt->scene->select <= rt->scene->max_anti_a + 1)
+	if (rt->scene->progress <= 12 && rt->scene->select <= rt->scene->anti_aliasing + 1)
 	{
 		progress_fill(rt);
 		rt->scene->progress++;
@@ -192,7 +233,8 @@ void		rt_auto_draw(t_rt *rt)
 
 int		rt_draw(t_rt *rt)
 {
-	//rt_auto_draw(rt);
+	ft_bzero(rt->data, IMG_WIDTH * IMG_HEIGHT * 4);
+	rt_start(rt, rt_run_12);
 	mlx_put_image_to_window(rt->mlx, rt->win, rt->img, 40, 180);
 	return (EXIT_SUCCESS);
 }

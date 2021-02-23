@@ -87,7 +87,7 @@ t_scene		*rt_init_scene(void)
 	scene->anti_aliasing = 9;
 	scene->progress = 1;//prog bar
 	scene->select = 0;
-	scene->max_anti_a = 5;
+	scene->max_anti_a = 9;
 	scene->ambient = 1.0;
 	scene->object = NULL;
 	scene->light = NULL;

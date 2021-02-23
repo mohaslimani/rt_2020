@@ -11,6 +11,7 @@
 # include <math.h>
 # include <float.h>
 # include <pthread.h>
+# include <rt_define.h>
 
 /*
  * Structures
@@ -189,7 +190,7 @@ typedef struct	s_scene
 	int			progress;//progress bar
 	int			select;
 	int			max_anti_a;
-	t_vec		data1[9][500000];//IMG_WIDTH*IMG_HEIGHT
+	t_vec		data1[9][IMG_WIDTH*IMG_HEIGHT];//IMG_WIDTH*IMG_HEIGHT
 }				t_scene;
 
 typedef struct	s_rt

@@ -44,6 +44,7 @@ void		sphere_uv(t_object *o, t_hit *rec)
 
 int			rt_hit_sphere(t_object *sphere, t_ray *r, t_hit *rec)
 {
+	sphere->is_sliced = 0;//
 	rec->or = vec_sub(r->origin, sphere->pos);
 	rec->coef[0] = vec_dot(r->dir, r->dir);
 	rec->coef[1] = 2 * vec_dot(rec->or, r->dir);
@@ -54,15 +55,47 @@ int			rt_hit_sphere(t_object *sphere, t_ray *r, t_hit *rec)
 		rec->t0 = (-rec->coef[1] - sqrt(rec->delta)) / (2 * rec->coef[0]);
 		rec->t1 = (-rec->coef[1] + sqrt(rec->delta)) / (2 * rec->coef[0]);
 		(rec->t0 < rec->t1) ? 0 : ft_float_swap(&rec->t0, &rec->t1);
+		if (sphere->is_sliced == 1 && rt_slicing(sphere, r, rec) == 0)
+			return (0);
 		if (negative(rec) == 0)
 			return (0);
+		//rec->t = rec->t0;
 		if (rec->t < rec->closest && rec->t > MIN)
 		{
-			rec->p = vec_ray(r, rec->t);
-			rec->n = (rec->t != rec->negative[1]) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : rec->negative_normal;
+			rec->p = (rec->t != sphere->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, -rec->tx) ;
+			rec->n = (/*sphere->is_sliced == 0 && */rec->t != rec->negative[1]) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : rec->negative_normal;
+			rec->n = (rec->t != sphere->sl_sl) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : vec_pro_k(sphere->sl_vec , -1);
 			sphere_uv(sphere, rec);
-			// if (sphere->is_sliced == 1 && rt_slicing(sphere, r, rec) == 0)
-			// 	return (0);
+			return (1);
+		}
+	}
+	return (0);
+}
+//no shit here
+int			rt_limited_sphere(t_object *sphere, t_ray *r, t_hit *rec)
+{
+	sphere->is_sliced = 0;//
+	rec->or = vec_sub(r->origin, sphere->pos);
+	rec->coef[0] = vec_dot(r->dir, r->dir);
+	rec->coef[1] = 2 * vec_dot(rec->or, r->dir);
+	rec->coef[2] = vec_dot(rec->or, rec->or) - pow(sphere->size, 2);
+	rec->delta = rec->coef[1] * rec->coef[1] - 4 * rec->coef[0] * rec->coef[2];
+	if (rec->delta > 0)
+	{
+		rec->t0 = (-rec->coef[1] - sqrt(rec->delta)) / (2 * rec->coef[0]);
+		rec->t1 = (-rec->coef[1] + sqrt(rec->delta)) / (2 * rec->coef[0]);
+		(rec->t0 < rec->t1) ? 0 : ft_float_swap(&rec->t0, &rec->t1);
+		if (sphere->is_sliced == 1 && rt_slicing(sphere, r, rec) == 0)
+			return (0);
+		if (negative(rec) == 0)
+			return (0);
+		//rec->t = rec->t0;
+		if (rec->t < rec->closest && rec->t > MIN)
+		{
+			rec->p = (rec->t != sphere->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, -rec->tx) ;
+			rec->n = (/*sphere->is_sliced == 0 && */rec->t != rec->negative[1]) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : rec->negative_normal;
+			rec->n = (rec->t != sphere->sl_sl) ? vec_div_k(vec_sub(rec->p, sphere->pos), sphere->size) : vec_pro_k(sphere->sl_vec , -1);
+			sphere_uv(sphere, rec);
 			return (1);
 		}
 	}

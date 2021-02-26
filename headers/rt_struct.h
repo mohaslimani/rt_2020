@@ -120,6 +120,9 @@ typedef struct	s_o
 	
 	struct s_o	*compos;
 	struct s_o	*next;
+
+	//slice solution
+	double sl_sl;
 }				t_object;
 
 typedef	struct	s_l
@@ -150,6 +153,7 @@ typedef struct	s_hit
 	double		closest;
 	double		t0;//sol1 2eme deg
 	double		t1;//sol2 2eme deg
+	double		tx;//texture for sliced objects
 	double		t;//plus petit sol
 	double		u;//texture
 	double		v;//texture

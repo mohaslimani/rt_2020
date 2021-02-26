@@ -6,7 +6,7 @@
 /*   By: msoulaim <msoulaim@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/30 23:33:48 by belhatho          #+#    #+#             */
-/*   Updated: 2021/02/15 17:28:18 by msoulaim         ###   ########.fr       */
+/*   Updated: 2021/02/24 08:36:38 by msoulaim         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,14 @@ int			rt_slicing(t_object *o, t_ray *r, t_hit *rec)
 	/*
 		slicing for (sphere / cylinder / )
 	*/
-
-	t_vec my = vec_unit(vec_sub(rec->p, vec_add(o->pos, 0.5)));
-	t_vec ax = vec_unit(vec(0, -1, 1));//
+	t_vec slicing_point = o->pos;
+	t_vec my = vec_unit(vec_sub(rec->p, slicing_point));
+	t_vec ax = vec_unit(vec(0, 0, 1));
 	t_object plan;
 	
 	if (vec_dot(my, ax) <= 0)
 	{
-		plan.pos = o->pos;
+		plan.pos = slicing_point;
 		plan.rot = vec_pro_k(ax, -1);
 		rec->t = rec->t1;
 		rec->p = vec_ray(r, rec->t);

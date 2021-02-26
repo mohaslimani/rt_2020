@@ -6,37 +6,91 @@ t_object rt_sl_plan(t_object *o, t_vec ax)
 {
   t_object plan;
 
-	plan.pos = o->pos;
+	plan.pos = o->sl_pnt;
 	plan.rot = vec_pro_k(ax, -1);
-  plan.col = o->col;
-  plan.noi = o-> noi;
-  plan.txt = o->txt;
-  plan.mat = o->mat;
+	plan.col = o->col;
+	plan.noi = o->noi;
+	plan.txt = o->txt;
+	plan.mat = o->mat;
   return (plan);
+}
+
+int		in_sphere(t_object *o)
+{
+	if ( vec_length(vec_sub(o->sl_pnt, o->pos)) >= o->size)
+		return (0);
+	return (1);
+}
+
+int		in_cylindr(t_object *o)
+{
+	t_vec a;
+	t_vec b;
+	double c;
+
+	a = vec_sub(o->pos, o->sl_pnt);
+	b = vec_cross(a, o->rot);
+	c = vec_length(b) / vec_length(o->rot);
+	if (c >= o->size)
+		return 0;
+	return (1);
+}
+
+int		in_cone(t_object *o)
+{
+	t_vec a;
+	t_vec b;
+	double c;
+
+	a = vec_sub(o->pos, o->sl_pnt);
+	b = vec_cross(a, o->rot);
+	c = vec_length(b) / vec_length(o->rot);
+	if (c >= tan(o->size / 2))
+		return 0;
+	return (1);
 }
 
 int			rt_slicing(t_object *o, t_ray *r, t_hit *rec)
 {
 	t_vec     ax;
 	t_vec     my;
-  t_object  plan;
-	double  t;
-  t_vec p;
-  ax = vec_unit(o->sl_vec);
-  my = vec_unit(vec_sub(rec->p, vec_add(o->pos, o->sl_pnt)));
+  	t_object  plan;
+	t_vec	p;
+	t_hit	recp;
+	int		ret;
+
+  	o->sl_vec = vec(0, 1, 0);//sl_vec
+	  //check if sl_pnt is inside the object before put o->is_sliced = 1;
+  	o->sl_pnt = vec(1,5,1);//sl_pnt
+	//if (in_sphere(o) == 0)return 1;
+	//if (in_cylindr(o) == 0)return 1;
+	//if (in_cone(o) == 0)return 1;
+	p = vec_ray(r, rec->t0);
+  	ax = vec_unit(o->sl_vec);
+  	my = vec_unit(vec_sub(p, o->sl_pnt));
 	if (vec_dot(my, ax) <= 0)
 	{
-    	plan = rt_sl_plan(o, ax);
-		t = rec->t1;
-		p = vec_ray(r, rec->t);
-		my = vec_unit(vec_sub(p, o->pos));
+		p = vec_ray(r, rec->t1);
+		my = vec_unit(vec_sub(p, o->sl_pnt));
 		if (vec_dot(my, ax) <= 0)
 			return(0);
-    	rec->t = t;
-    	rec->p = p;
-		return(rt_hit_plan(&plan, r, rec));
+		ft_memcpy(&recp, rec, sizeof(t_hit));
+		plan = rt_sl_plan(o, ax);
+		recp.negative[0] = 0;
+		recp.negative[1] = 0;
+		recp.negative_normal = (t_vec){0, 0, 0};
+		ret = rt_hit_plan(&plan, r, &recp);
+		if (ret == 1 && recp.t < rec->t1)
+		{
+			rec->tx = rec->t0;
+			rec->t0 = recp.t;
+			o->sl_sl = recp.t;
+			return (1);
+		}
+		else
+			return 0;
 	}
-	return (1);
+	return 1;
 }
 
 int			rt_negative_cylinder(t_object *o, t_ray *r, t_hit *rec)
@@ -263,13 +317,16 @@ int rt_hit(t_scene *scene, t_ray *r, t_hit *record)
   t_object  *obj;
   int      check_hit;
   
-  t_object nega;
-  //negative sphere
-  nega.pos = vec(0, 1, 0);
-  nega.size = 4;
-  nega.col = vec(0, 0, 0);
-  rt_negative_sphere(&nega, r, record);
-
+ t_object nega;
+ // negative sphere
+//   nega.pos = vec(1, 5, 1);
+//   nega.size = 1;
+//   nega.col = vec(0, 0, 0);
+//   rt_negative_sphere(&nega, r, record);
+  /* if (there is no negative object)*/
+		// record->negative[0] = 0;
+		// record->negative[1] = 0;
+		// record->negative_normal = (t_vec){0, 0, 0};
 	// negative cylindre
 	// nega.pos = vec(0, 0, 0);
 	// nega.rot = vec_unit(vec(0, 0, -1));

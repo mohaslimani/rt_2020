@@ -2,7 +2,7 @@
 
 
 <Camera
-  lookfrom="0.0 2 -5.0"
+  lookfrom="-13.0 2 -5.0"
   lookat="0 0 0"
   fov="60"
   />
@@ -10,6 +10,6 @@
 <Object name="plan" position="0.0 0 15.0" direction="0 0 1" 
 color="01 1.0 0.0" material="ko"/>
 
-<Object name="sphere" direction="0 1 0" position="0 0 2" material="ko" radius="2" color="0 1 0"/>
+<Object name="sphere" position="0 0 2" material="ko" radius="2" color="0 1 0"/>
 
 <Light position="0 0 -16" intensity="0.8" />

@@ -1,15 +1,19 @@
 <!DOCTYPE xml>
 
 
-<Camera   lookfrom="-4 4 10"
-  lookat="0 0 0"
+<Camera   lookfrom="0 0 -8"
+  lookat="1 5 1"
   fov="60"
   />
 
 
+<Object name="plan" position="0.0 0 5.0" direction="0 0.0 -1" 
+color="01 1.0 0.0" material="ko" texture="xpm/corner.xpm"/>
 
-<Object name="sphere" direction="0 0 1" position="0 0 -2.0" material="ko"
-radius="3"  slice_pnt="0 1 0" slice_vec="1 -1 0"/>
+<Object name="cone" direction="0 1 0" position="1 1 1.0" material="ko" noise="damier"
+radius="90"/>
 
+<Light position="5 1.0 -16" intensity="0.8" />
+<Light position="-5 -1 -16" intensity="0.8" />
 
 <Light position="10 20.0 30" intensity="1.0" />

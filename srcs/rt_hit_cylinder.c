@@ -67,7 +67,7 @@ t_vec		normale_cylinder(t_object *o, t_ray *r, t_hit *rec)
 
 int     rt_hit_cylinder(t_object *obj, t_ray *ray, t_hit *record)
 {
-
+	obj->is_sliced = 0;
     record->or = vec_sub(ray->origin, obj->pos);
 	record->a = vec_dot(ray->dir, ray->dir) - pow(vec_dot(ray->dir, vec_unit(obj->rot)), 2);
 	record->b = 2 * (vec_dot(ray->dir, record->or) - (vec_dot(ray->dir, vec_unit(obj->rot))
@@ -80,16 +80,16 @@ int     rt_hit_cylinder(t_object *obj, t_ray *ray, t_hit *record)
 		record->t0 = (-record->b - sqrt(record->delta)) / (2 * record->a);
 		record->t1 = (-record->b + sqrt(record->delta)) / (2 * record->a);
 		(record->t0 > record->t1) ? ft_float_swap(&record->t0, &record->t1) : 0;
-		if ((record->t0 <= record->negative[0] || record->t0 >= record->negative[1]))
-			record->t = record->t0;
-		else if (record->negative[0] <= record->t0 && record->t0 <= record->negative[1] && record->negative[1] < record->t1)
-			record->t = record->negative[1];
-		else
+		if (obj->is_sliced == 1 && rt_slicing(obj, ray, record) == 0)
 			return (0);
-    	if (record->t < record->closest && record->t >= 1e-4)
+		if (negative(record) == 0)
+			return (0);
+    	if (record->t < record->closest && record->t >= MIN)
    		{
-			record->p = vec_ray(ray, record->t);
+			record->p = (record->t != obj->sl_sl) ? vec_ray(ray, record->t) : vec_ray(ray, record->t) ;
+			//record->p = vec_ray(ray, record->t);
 			record->n = (record->t != record->negative[1]) ? normale_cylinder(obj, ray, record) : record->negative_normal;
+			record->n = (record->t != obj->sl_sl) ? normale_cylinder(obj, ray, record) : vec_pro_k(obj->sl_vec , -1);
 			cylinder_uv(obj, record);
 			return (1);
 		}

@@ -146,7 +146,7 @@ void			*rt_run_12(t_thread *t)
 			rt_mlx_putpixel(t->rt, col, IMG_HEIGHT - row, color);
 			rt_mlx_putpixel(t->rt, col + 1, IMG_HEIGHT - row, color);
 			rt_mlx_putpixel(t->rt, col + 2, IMG_HEIGHT - row, color);
-
+ 
 			rt_mlx_putpixel(t->rt, col , IMG_HEIGHT - row - 1, color);
 			rt_mlx_putpixel(t->rt, col  + 1, IMG_HEIGHT - row - 1, color);
 			rt_mlx_putpixel(t->rt, col  + 2, IMG_HEIGHT - row - 1, color);

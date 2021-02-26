@@ -107,13 +107,16 @@ int		negative(t_hit *record)
 		record->t = record->t0;
 	else if (record->negative[0] <= record->t0 && record->t0 <= record->negative[1] && record->negative[1] < record->t1)
 		record->t = record->negative[1];
+	/*else if (record->negative[0] <= record->t0 && record->t0 <= record->negative[1] && record->negative[1] < record->t1)
+		record->t = record->negative[1];*/
 	else
-		return (0);
+		return 0;
 	return (1);
 }
 
 int			rt_hit_cone(t_object *o, t_ray *r, t_hit *rec)
 {
+	o->is_sliced = 1;//
 	rec->or = vec_sub(r->origin, o->pos);
 	rec->coef[0] = vec_dot(r->dir, r->dir) - ((1 + pow(tan(o->size), 2))
 		* pow(vec_dot(r->dir, o->rot), 2));
@@ -129,12 +132,16 @@ int			rt_hit_cone(t_object *o, t_ray *r, t_hit *rec)
 	rec->t0 = (-rec->coef[1] - sqrt(rec->delta)) / (2 * rec->coef[0]);
 	rec->t1 = (-rec->coef[1] + sqrt(rec->delta)) / (2 * rec->coef[0]);
 	(rec->t0 > rec->t1) ? ft_float_swap(&rec->t0, &rec->t1) : 0;//just a swap
+	if (o->is_sliced == 1 && rt_slicing(o, r, rec) == 0)
+		return (0);
 	if (negative(rec) == 0)
 		return (0);
 	if (rec->t < rec->closest && rec->t > MIN)
 	{
-		rec->p = vec_ray(r, rec->t);
+		rec->p = (rec->t != o->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, -rec->tx) ;
+		//rec->p = vec_ray(r, -rec->t);
 		rec->n = (rec->t != rec->negative[1]) ? normale_cone(o, r, rec) : rec->negative_normal;
+		rec->n = (rec->t != o->sl_sl) ? normale_cone(o, r, rec) : vec_pro_k(o->sl_vec , -1);
 		cone_uv(o, rec);
         return (1);
 	}

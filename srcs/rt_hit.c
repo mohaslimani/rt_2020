@@ -327,17 +327,17 @@ int rt_hit(t_scene *scene, t_ray *r, t_hit *record)
 		// record->negative[0] = 0;
 		// record->negative[1] = 0;
 		// record->negative_normal = (t_vec){0, 0, 0};
-	// negative cylindre
+	//negative cylindre
 	// nega.pos = vec(0, 0, 0);
-	// nega.rot = vec_unit(vec(0, 0, -1));
+	// nega.rot = vec_unit(vec(0, 1, 0));
 	// nega.size = 2;
 	// rt_negative_cylinder(&nega, r, record);
 
 	//negative cone
-// 	nega.pos = vec(0, 0, 0);
-// 	nega.rot = vec_unit(vec(0, 1, 0));
-// 	nega.size = tan(3.14/6);
-// rt_negative_cone(&nega, r, record);
+	nega.pos = vec(1, 1, -3);
+	nega.rot = vec_unit(vec(0, 1, 0));
+	nega.size = tan(3.14/6);
+	rt_negative_cone(&nega, r, record);
   check_hit = 0;
   record->closest = MAX;
   obj = scene->object;

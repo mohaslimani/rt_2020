@@ -116,7 +116,7 @@ int		negative(t_hit *record)
 
 int			rt_hit_cone(t_object *o, t_ray *r, t_hit *rec)
 {
-	o->is_sliced = 1;//
+	o->is_sliced = 0;//
 	rec->or = vec_sub(r->origin, o->pos);
 	rec->coef[0] = vec_dot(r->dir, r->dir) - ((1 + pow(tan(o->size), 2))
 		* pow(vec_dot(r->dir, o->rot), 2));
@@ -138,7 +138,7 @@ int			rt_hit_cone(t_object *o, t_ray *r, t_hit *rec)
 		return (0);
 	if (rec->t < rec->closest && rec->t > MIN)
 	{
-		rec->p = (rec->t != o->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, -rec->tx) ;
+		rec->p = (rec->t != o->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, rec->t) ;
 		//rec->p = vec_ray(r, -rec->t);
 		rec->n = (rec->t != rec->negative[1]) ? normale_cone(o, r, rec) : rec->negative_normal;
 		rec->n = (rec->t != o->sl_sl) ? normale_cone(o, r, rec) : vec_pro_k(o->sl_vec , -1);

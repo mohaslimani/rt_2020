@@ -86,10 +86,13 @@ int     rt_hit_cylinder(t_object *obj, t_ray *ray, t_hit *record)
 			return (0);
     	if (record->t < record->closest && record->t >= MIN)
    		{
-			record->p = (record->t != obj->sl_sl) ? vec_ray(ray, record->t) : vec_ray(ray, record->t) ;
-			//record->p = vec_ray(ray, record->t);
-			record->n = (record->t != record->negative[1]) ? normale_cylinder(obj, ray, record) : record->negative_normal;
-			record->n = (record->t != obj->sl_sl) ? normale_cylinder(obj, ray, record) : vec_pro_k(obj->sl_vec , -1);
+			record->p = vec_ray(ray, record->t);
+			if (record->t == obj->sl_sl)
+				record->n = vec_pro_k(obj->sl_vec , -1);
+			else if (record->t == record->negative[1])
+				record->n = record->negative_normal;
+			else
+				record->n = normale_cylinder(obj, ray, record);
 			cylinder_uv(obj, record);
 			return (1);
 		}

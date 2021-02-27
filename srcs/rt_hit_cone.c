@@ -138,10 +138,13 @@ int			rt_hit_cone(t_object *o, t_ray *r, t_hit *rec)
 		return (0);
 	if (rec->t < rec->closest && rec->t > MIN)
 	{
-		rec->p = (rec->t != o->sl_sl) ? vec_ray(r, rec->t) : vec_ray(r, rec->t) ;
-		//rec->p = vec_ray(r, -rec->t);
-		rec->n = (rec->t != rec->negative[1]) ? normale_cone(o, r, rec) : rec->negative_normal;
-		rec->n = (rec->t != o->sl_sl) ? normale_cone(o, r, rec) : vec_pro_k(o->sl_vec , -1);
+		rec->p = vec_ray(r, rec->t);
+		if (rec->t == o->sl_sl)
+			rec->n = vec_pro_k(o->sl_vec , -1);
+		else if (rec->t == rec->negative[1])
+			rec->n = rec->negative_normal;
+		else
+			rec->n = normale_cone(o, r, rec);
 		cone_uv(o, rec);
         return (1);
 	}

@@ -59,9 +59,9 @@ int			rt_slicing(t_object *o, t_ray *r, t_hit *rec)
 	t_hit	recp;
 	int		ret;
 
-  	o->sl_vec = vec(0, 1, 0);//sl_vec
+  	o->sl_vec = vec(0, -1, 0);//sl_vec
 	  //check if sl_pnt is inside the object before put o->is_sliced = 1;
-  	o->sl_pnt = vec(1,5,1);//sl_pnt
+  	o->sl_pnt = vec(1,1.5,0);//sl_pnt
 	//if (in_sphere(o) == 0)return 1;
 	//if (in_cylindr(o) == 0)return 1;
 	//if (in_cone(o) == 0)return 1;
@@ -334,7 +334,7 @@ int rt_hit(t_scene *scene, t_ray *r, t_hit *record)
 	// rt_negative_cylinder(&nega, r, record);
 
 	//negative cone
-	nega.pos = vec(1, 1, -3);
+	nega.pos = vec(1, 1, -2);
 	nega.rot = vec_unit(vec(0, 1, 0));
 	nega.size = tan(3.14/6);
 	rt_negative_cone(&nega, r, record);
